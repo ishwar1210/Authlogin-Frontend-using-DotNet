@@ -1,0 +1,8 @@
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.main-area {
+  flex: 1;
+  background: #f3f6fb;
+}

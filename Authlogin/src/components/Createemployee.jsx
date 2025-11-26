@@ -1,0 +1,142 @@
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getRoleFromToken } from "../utils/jwt";
+import "./AuthForms.css";
+
+function CreateEmployee() {
+  const token = localStorage.getItem("token");
+  const role = getRoleFromToken(token) || "";
+  const allowed =
+    role.toString().toLowerCase().includes("manager") ||
+    role.toString().toLowerCase().includes("admin");
+
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    fullName: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      // fixed role
+      const body = { ...form, role: "Employee" };
+
+      const res = await fetch(
+        "https://localhost:7055/api/auth/register/with-role",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(body),
+        }
+      );
+
+      const text = await res.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (err) {
+        data = text;
+      }
+
+      if (!res.ok) {
+        throw new Error(
+          (data && data.message) || `Request failed: ${res.status}`
+        );
+      }
+
+      toast.success("Employee created successfully", { theme: "colored" });
+      setForm({ username: "", email: "", password: "", fullName: "" });
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Create employee failed");
+      toast.error(err.message || "Create employee failed", {
+        theme: "colored",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!allowed)
+    return (
+      <div style={{ padding: 20 }}>Access denied — manager or admin only</div>
+    );
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card" style={{ maxWidth: 900 }}>
+        <div className="auth-left" style={{ flex: 0.9, display: "none" }}></div>
+        <div className="auth-right" style={{ flex: 1 }}>
+          <div className="form-wrapper">
+            <h2 className="title">Create Employee</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="input-group">
+                <label>Username</label>
+                <input
+                  name="username"
+                  value={form.username}
+                  onChange={handleChange}
+                  className="text-input"
+                />
+              </div>
+              <div className="input-group">
+                <label>Email</label>
+                <input
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="text-input"
+                />
+              </div>
+              <div className="input-group">
+                <label>Full Name</label>
+                <input
+                  name="fullName"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  className="text-input"
+                />
+              </div>
+              <div className="input-group">
+                <label>Password</label>
+                <input
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="text-input"
+                />
+              </div>
+
+              <div className="button-group">
+                <button
+                  className="primary-btn"
+                  type="submit"
+                  disabled={loading}
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default CreateEmployee;

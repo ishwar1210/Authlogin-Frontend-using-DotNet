@@ -1,0 +1,53 @@
+.app-sidebar {
+  width: 260px;
+  background: #0f1724;
+  color: #fff;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.sidebar-header {
+  margin-bottom: 14px;
+}
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+.role-label {
+  font-size: 13px;
+  color: #9aa3b2;
+  margin-top: 6px;
+}
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0 0;
+  flex: 1;
+}
+.menu-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #e6eef8;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.sidebar-footer {
+  margin-top: 12px;
+}
+.logout-btn {
+  width: 100%;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  opacity: 0.95;
+}

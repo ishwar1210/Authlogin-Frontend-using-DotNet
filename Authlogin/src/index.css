@@ -1,0 +1,18 @@
+/* Global: prevent page scrolling */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* disable scrolling */
+}
+
+/* Ensure the top-level React app fills the viewport so content doesn't push the page */
+#root > * {
+  height: 100%;
+}
+
+/* If you need an internal area to scroll, give that container a class like `.scrollable` */
+.scrollable {
+  overflow: auto;
+}
