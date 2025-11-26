@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import "./AuthForms.css";
+import { auth } from "../api/endpoint";
 import loginImage from "../assets/imgi_1_login.svg";
 
 function Login() {
@@ -20,66 +21,41 @@ function Login() {
     }));
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
     setLoading(true);
-
-    // post JSON to API
-    fetch("https://localhost:7055/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const data = await auth.login({
         username: formData.username,
         password: formData.password,
-      }),
-    })
-      .then(async (res) => {
-        const text = await res.text();
-        let data = null;
+      });
+
+      console.log("Login response:", data);
+      const token =
+        data?.token ||
+        data?.accessToken ||
+        (data && typeof data === "string" ? data : null) ||
+        data?.data?.token;
+      if (token) {
         try {
-          data = text ? JSON.parse(text) : null;
-        } catch (err) {
-          data = text;
+          localStorage.setItem("token", token);
+          localStorage.setItem("bearer", `Bearer ${token}`);
+        } catch (e) {
+          console.warn("Could not persist token to localStorage", e);
         }
-        if (!res.ok) {
-          const errMsg =
-            (data && data.message) ||
-            (typeof data === "string" ? data : `Request failed: ${res.status}`);
-          throw new Error(errMsg);
-        }
-        return data;
-      })
-      .then((data) => {
-        console.log("Login response:", data);
-        const token =
-          data?.token ||
-          data?.accessToken ||
-          (data && typeof data === "string" ? data : null) ||
-          data?.data?.token;
-        if (token) {
-          try {
-            // store raw token and a Bearer string for convenience
-            localStorage.setItem("token", token);
-            localStorage.setItem("bearer", `Bearer ${token}`);
-          } catch (e) {
-            console.warn("Could not persist token to localStorage", e);
-          }
-          setSuccess("Login successful — redirecting");
-          // brief delay so user sees success message
-          setTimeout(() => window.location.reload(), 700);
-        } else {
-          setSuccess("Login successful");
-        }
-      })
-      .catch((err) => {
-        console.error("Login error:", err);
-        setError(err.message || "Login failed");
-      })
-      .finally(() => setLoading(false));
+        setSuccess("Login successful — redirecting");
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        setSuccess("Login successful");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

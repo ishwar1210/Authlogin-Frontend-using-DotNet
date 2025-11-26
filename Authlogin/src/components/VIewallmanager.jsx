@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { users } from "../api/endpoint";
 import { getRoleFromToken } from "../utils/jwt";
 import "./AuthForms.css";
 
@@ -14,30 +15,7 @@ function ViewAllManagers() {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem("token");
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch("https://localhost:7055/api/users/managers", {
-          method: "GET",
-          headers,
-        });
-
-        const text = await res.text();
-        let data = null;
-        try {
-          data = text ? JSON.parse(text) : null;
-        } catch (err) {
-          data = text;
-        }
-
-        if (!res.ok) {
-          const message =
-            (data && data.message) || `Request failed: ${res.status}`;
-          throw new Error(message);
-        }
-
-        // assume data is an array of manager objects
+        const data = await users.getManagers();
         setManagers(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error(err);

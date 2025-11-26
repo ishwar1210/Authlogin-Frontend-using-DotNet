@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { auth } from "../api/endpoint";
 import { getRoleFromToken } from "../utils/jwt";
 import "./AuthForms.css";
 
@@ -28,36 +29,8 @@ function CreateEmployee() {
     setError(null);
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      // fixed role
       const body = { ...form, role: "Employee" };
-
-      const res = await fetch(
-        "https://localhost:7055/api/auth/register/with-role",
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify(body),
-        }
-      );
-
-      const text = await res.text();
-      let data = null;
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch (err) {
-        data = text;
-      }
-
-      if (!res.ok) {
-        throw new Error(
-          (data && data.message) || `Request failed: ${res.status}`
-        );
-      }
-
+      const data = await auth.registerWithRole(body);
       toast.success("Employee created successfully", { theme: "colored" });
       setForm({ username: "", email: "", password: "", fullName: "" });
     } catch (err) {

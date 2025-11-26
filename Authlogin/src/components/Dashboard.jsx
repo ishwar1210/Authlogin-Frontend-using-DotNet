@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { parseJwt, getRoleFromToken } from "../utils/jwt";
+import { getRoleFromToken } from "../utils/jwt";
 import { toast } from "react-toastify";
+import { users } from "../api/endpoint";
 
 function Dashboard() {
   const token = localStorage.getItem("token");
@@ -12,35 +13,14 @@ function Dashboard() {
     const fetchCount = async () => {
       setLoading(true);
       try {
-        let url = null;
+        let data = null;
         if (role.toString().toLowerCase().includes("admin")) {
-          url = "https://localhost:7055/api/users/managers";
+          data = await users.getManagers();
         } else if (role.toString().toLowerCase().includes("manager")) {
-          url = "https://localhost:7055/api/users/employees";
-        }
-
-        if (!url) {
+          data = await users.getEmployees();
+        } else {
           setCount(null);
           return;
-        }
-
-        const headers = { "Content-Type": "application/json" };
-        const token = localStorage.getItem("token");
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(url, { method: "GET", headers });
-        const text = await res.text();
-        let data = null;
-        try {
-          data = text ? JSON.parse(text) : null;
-        } catch (err) {
-          data = text;
-        }
-
-        if (!res.ok) {
-          const message =
-            (data && data.message) || `Request failed: ${res.status}`;
-          throw new Error(message);
         }
 
         if (Array.isArray(data)) setCount(data.length);
