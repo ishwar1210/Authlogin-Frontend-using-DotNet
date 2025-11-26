@@ -4,7 +4,7 @@ import "./AuthForms.css";
 import { auth } from "../api/endpoint";
 import loginImage from "../assets/imgi_1_login.svg";
 
-function Login() {
+function Login({ onForgot }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -98,7 +98,14 @@ function Login() {
               </div>
 
               <div className="forgot-password">
-                <a href="#!" className="forgot-link">
+                <a
+                  href="#"
+                  className="forgot-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onForgot && onForgot();
+                  }}
+                >
                   Forgot password?
                 </a>
               </div>
