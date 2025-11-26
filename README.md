@@ -13,7 +13,7 @@
 - `dotnet add package MySqlConnector`
 - `dotnet run`
 - Default HTTPS URL shown by `dotnet run` (e.g. https://localhost:7055)
-  3. Frontend:
+3. Frontend:
 - `cd frontend`
 - `npm install`
 - `npm run dev`
