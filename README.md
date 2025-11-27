@@ -56,7 +56,3 @@
 
 ### Employee Dashborad
 <img width="1919" height="870" alt="image" src="https://github.com/user-attachments/assets/db7c4c14-ac80-4ec2-a05e-478457224ac8" />
-
-
-
-
